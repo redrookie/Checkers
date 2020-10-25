@@ -5,7 +5,7 @@ pygame.init()
 
 icon = pygame.image.load('img/checkers.png')
 board = pygame.image.load('img/checkers_board.jpg')
-screen = pygame.display.set_mode((800,600))
+screen = pygame.display.set_mode((520,520))
 pygame.display.set_caption("Damas")
 pygame.display.set_icon(icon)
 
