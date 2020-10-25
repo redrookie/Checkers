@@ -3,8 +3,8 @@ import pygame
 pygame.init()
 
 
-icon = pygame.image.load('checkers.png')
-board = pygame.image.load('checkers_board.png')
+icon = pygame.image.load('img/checkers.png')
+board = pygame.image.load('img/checkers_board.jpg')
 screen = pygame.display.set_mode((800,600))
 pygame.display.set_caption("Damas")
 pygame.display.set_icon(icon)
