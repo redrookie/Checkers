@@ -27,13 +27,13 @@ class Jogo:
                 if self.matriz_tabuleiro[i][j]=='_':
                     v.append('_')
                 if self.matriz_tabuleiro[i][j] == 'b':
-                    x = 95*j
+                    x = self.getX(i, j)
                     v.append(Peca('preta', x, y))
                 if self.matriz_tabuleiro[i][j] == 'a':
-                    x = 95*j
+                    x = self.getX(i,j)
                     v.append(Peca('branca', x, y))
  
-            y+= 65
+            y+= 66
             matriz.append(v)
             v = []
 
@@ -41,3 +41,23 @@ class Jogo:
             for j in range(len(matriz[i])):
                 if matriz[i][j]!= '_':
                     screen.blit(matriz[i][j].getImg(), (matriz[i][j].x, matriz[i][j].y))
+
+    def getX(self, i, j):
+        if i==0 or i==2 or i==5 or i==7:
+            if j==1:
+                return 160
+            if j==3:
+                return 290
+            if j==5:
+                return 430
+            if j==7:
+                return 560
+        if i==1 or i==6:
+            if j==0:
+                return 95
+            if j==2:
+                return 230
+            if j==4:
+                return 365
+            if j==6:
+                return 495
