@@ -2,56 +2,48 @@ import pygame
 import pygame_menu
 from Jogo import Jogo
 
+def disable_menu(screen, board):
+    menu.disable()
+    screen.blit(board, (0, 0))
+
 pygame.init()
 
 icon = pygame.image.load('img/checkers.png')
 board = pygame.image.load('img/checkers_board.jpg')
-screen = pygame.display.set_mode((700,700))
+screen = pygame.display.set_mode((520,520))
 pygame.display.set_caption("Damas")
 pygame.display.set_icon(icon)
-
-
-######################## TABULEIRO
-
-
-game_theme = pygame_menu.themes.THEME_DARK.copy()
-game = pygame_menu.Menu(700, 700, 
-                        onclose=pygame_menu.events.DISABLE_CLOSE,
-                        theme=game_theme,
-                        title = 'Match')
-
-game.add_image('img/checkers_board.jpg',
-                     align = pygame_menu.locals.ALIGN_CENTER)                    
-
-game.add_button('Give Up', pygame_menu.events.BACK, align = pygame_menu.locals.ALIGN_CENTER)
-
-
-
-########################## MENU
-menu = pygame_menu.Menu(700, 700, 'Damas',theme=pygame_menu.themes.THEME_DARK, onclose=pygame_menu.events.EXIT)
-menu.add_button('Play', game, align=pygame_menu.locals.ALIGN_RIGHT)
-menu.add_selector('Difficulty',  [('Easy', 'EASY'),
-                                ('Medium', 'MEDIUM'),
-                                ('Hard', 'HARD')], selector_id='difficulty', default=1, align=pygame_menu.locals.ALIGN_RIGHT)
-
-menu.add_button('Quit', pygame_menu.events.EXIT, align=pygame_menu.locals.ALIGN_RIGHT)
-
-
+menu = pygame_menu.Menu(520, 520, 'Damas',theme=pygame_menu.themes.THEME_DARK)
+menu.add_button('Play', disable_menu, screen, board)
+menu.add_button('Quit', pygame_menu.events.EXIT)
 #GameLoop
 running = True
 jogo = Jogo()
-
-
-
+mouse_pos = [(0,0),(0,0)] # Pos antiga e nova do click do mouse para movimentar as pecas
+count_clicks = 0 # Quando 2 clicks forem contados, movimenta a peca de mouse_pos[0] para mouse_pos[1]
 
 while running:
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             running = False
-                        
-
-    menu.update(events)
-    menu.draw(screen)
-    jogo.desenha_tabuleiro(screen)
+        if event.type == pygame.MOUSEBUTTONUP and not menu.is_enabled():
+            pos = pygame.mouse.get_pos()
+            count_clicks += 1
+            if count_clicks == 1:
+                mouse_pos[0] = pos
+            elif count_clicks == 2:
+                mouse_pos[1] = pos
+                count_clicks = 0
+                print(mouse_pos)
+                jogo.movimenta_peca(screen, mouse_pos)
+    #Exception ocorre ao dar Play no jogo pois o IF ainda esta rodando (CONSERTAR DEPOIS)
+    if menu.is_enabled():
+        try:
+            menu.update(events)
+            menu.draw(screen)
+        except:
+            pass
+    else:
+        jogo.desenha_tabuleiro(screen)
     pygame.display.update()
