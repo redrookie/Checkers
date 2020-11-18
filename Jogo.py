@@ -37,6 +37,7 @@ class Jogo:
             y += 66
             matriz.append(v)
             v = []
+            screen.fill((0,0,0))
             screen.blit(board, (0, 0))
             for i in range(len(matriz)):
                 for j in range(len(matriz[i])):
@@ -75,11 +76,11 @@ class Jogo:
                 indice_antigo_superior_x = i
                 break
         for i in range(8):
-            if limite_posicoes[i] > mouse_pos[1][0]:
+            if limite_posicoes[i] > mouse_pos[0][1]:
                 indice_antigo_superior_y = i
                 break
         for i in range(8):
-            if limite_posicoes[i] > mouse_pos[0][1]:
+            if limite_posicoes[i] > mouse_pos[1][0]:
                 indice_novo_superior_x = i
                 break
         for i in range(8):
@@ -90,9 +91,9 @@ class Jogo:
         print(indice_antigo_superior_y)
         print(indice_novo_superior_x)
         print(indice_novo_superior_y)
-        val_aux = self.matriz_tabuleiro[indice_novo_superior_x][indice_novo_superior_y] #Auxiliar para permitir o swap entre as posicoes da matriz
-        self.matriz_tabuleiro[indice_novo_superior_x][indice_novo_superior_y] = self.matriz_tabuleiro[indice_antigo_superior_x][indice_antigo_superior_y]
-        self.matriz_tabuleiro[indice_antigo_superior_x][indice_antigo_superior_y] = val_aux
+        val_aux = self.matriz_tabuleiro[indice_novo_superior_y][indice_novo_superior_x] #Auxiliar para permitir o swap entre as posicoes da matriz
+        self.matriz_tabuleiro[indice_novo_superior_y][indice_novo_superior_x] = self.matriz_tabuleiro[indice_antigo_superior_y][indice_antigo_superior_x]
+        self.matriz_tabuleiro[indice_antigo_superior_y][indice_antigo_superior_x] = val_aux
         self.desenha_tabuleiro(screen, board)
 
 
