@@ -19,7 +19,7 @@ class Jogo:
                                  ['_', 'a', '_', 'a', '_', 'a', '_', 'a']]
 
     # Change deve usar o formato (x_antigo, y_antigo, x_novo, y_novo)
-    def desenha_tabuleiro(self, screen):
+    def desenha_tabuleiro(self, screen, board):
         matriz = []
         y = 5
         for i in range(len(self.matriz_tabuleiro)):
@@ -37,7 +37,7 @@ class Jogo:
             y += 66
             matriz.append(v)
             v = []
-
+            screen.blit(board, (0, 0))
             for i in range(len(matriz)):
                 for j in range(len(matriz[i])):
                     if matriz[i][j] != '_':
@@ -64,5 +64,36 @@ class Jogo:
             if j == 6:
                 return 400
 
-    def movimenta_peca(self, screen, mouse_pos): # mouse_pos guarda as posicoes antiga e nova do mouse num array contendo 2 tuplas
-        pass
+    def movimenta_peca(self, screen, mouse_pos, board): # mouse_pos guarda as posicoes antiga e nova do mouse num array contendo 2 tuplas
+        limite_posicoes = [56, 123, 189, 256, 325, 392, 460, 516] #Limite em pixels de cada quadrado em X e Y
+        indice_antigo_superior_x = 0
+        indice_antigo_superior_y = 0
+        indice_novo_superior_x = 0
+        indice_novo_superior_y = 0
+        for i in range(8):
+            if limite_posicoes[i] > mouse_pos[0][0]:
+                indice_antigo_superior_x = i
+                break
+        for i in range(8):
+            if limite_posicoes[i] > mouse_pos[1][0]:
+                indice_antigo_superior_y = i
+                break
+        for i in range(8):
+            if limite_posicoes[i] > mouse_pos[0][1]:
+                indice_novo_superior_x = i
+                break
+        for i in range(8):
+            if limite_posicoes[i] > mouse_pos[1][1]:
+                indice_novo_superior_y = i
+                break
+        print(indice_antigo_superior_x)
+        print(indice_antigo_superior_y)
+        print(indice_novo_superior_x)
+        print(indice_novo_superior_y)
+        val_aux = self.matriz_tabuleiro[indice_novo_superior_x][indice_novo_superior_y] #Auxiliar para permitir o swap entre as posicoes da matriz
+        self.matriz_tabuleiro[indice_novo_superior_x][indice_novo_superior_y] = self.matriz_tabuleiro[indice_antigo_superior_x][indice_antigo_superior_y]
+        self.matriz_tabuleiro[indice_antigo_superior_x][indice_antigo_superior_y] = val_aux
+        self.desenha_tabuleiro(screen, board)
+
+
+
