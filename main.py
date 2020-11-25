@@ -129,12 +129,14 @@ while running:
                 piece_to_kill_group.add(p)
                 if pygame.sprite.spritecollide(selected_piece, piece_to_kill_group, False):
                     piece_to_kill = p
+                piece_to_kill_group.remove(p)
         if (selected_piece.__getattribute__('cor') == 'preta' and pygame.sprite.spritecollide(selected_piece, white_pieces_group, False)):
             for p in white_pieces_group.sprites():
                 piece_to_kill_group.add(p)
                 if pygame.sprite.spritecollide(selected_piece, piece_to_kill_group, False):
                     piece_to_kill = p
-        
+                piece_to_kill_group.remove(p)
+
     #print(old_position)
     #Metodos para desenhar os objetos na janela
     if menu.is_enabled():
