@@ -8,7 +8,7 @@ class Peca(pygame.sprite.Sprite):
         self.pos = pos
         self.image = self.getImg()
         self.rect = self.image.get_rect()
-        self.rect.topleft = pos
+        self.rect.center = pos
 
     def getImg(self):
         if self.cor == 'preta':
@@ -21,4 +21,4 @@ class Peca(pygame.sprite.Sprite):
             return self.img
 
     def update(self):
-        self.rect.topleft = self.pos
+        self.rect.center = self.pos

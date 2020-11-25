@@ -17,32 +17,36 @@ menu.add_button('Quit', pygame_menu.events.EXIT)
 running = True
 
 #Criar pecas
+selected_piece_group = pygame.sprite.Group()
 black_pieces_group = pygame.sprite.Group()
 white_pieces_group = pygame.sprite.Group()
-black_pieces_group.add(Peca('preta', (0,0)))
-black_pieces_group.add(Peca('preta', (135,0)))
-black_pieces_group.add(Peca('preta', (265,0)))
-black_pieces_group.add(Peca('preta', (405,0)))
-black_pieces_group.add(Peca('preta', (65,67)))
-black_pieces_group.add(Peca('preta', (200,67)))
-black_pieces_group.add(Peca('preta', (340,67)))
-black_pieces_group.add(Peca('preta', (470,67)))
-black_pieces_group.add(Peca('preta', (0,135)))
-black_pieces_group.add(Peca('preta', (135,135)))
-black_pieces_group.add(Peca('preta', (265,135)))
-black_pieces_group.add(Peca('preta', (405,135)))
-white_pieces_group.add(Peca('branca', (62,465)))
-white_pieces_group.add(Peca('branca', (200,465)))
-white_pieces_group.add(Peca('branca', (335,465)))
-white_pieces_group.add(Peca('branca', (465,465)))
-white_pieces_group.add(Peca('branca', (0,410)))
-white_pieces_group.add(Peca('branca', (135,410)))
-white_pieces_group.add(Peca('branca', (265,410)))
-white_pieces_group.add(Peca('branca', (400,410)))
-white_pieces_group.add(Peca('branca', (62,340)))
-white_pieces_group.add(Peca('branca', (200,340)))
-white_pieces_group.add(Peca('branca', (335,340)))
-white_pieces_group.add(Peca('branca', (465,340)))
+black_pieces_group.add(Peca('preta', (25,25)))
+black_pieces_group.add(Peca('preta', (160,25)))
+black_pieces_group.add(Peca('preta', (290,25)))
+black_pieces_group.add(Peca('preta', (430,25)))
+black_pieces_group.add(Peca('preta', (90,92)))
+black_pieces_group.add(Peca('preta', (225,92)))
+black_pieces_group.add(Peca('preta', (365,92)))
+black_pieces_group.add(Peca('preta', (495,92)))
+black_pieces_group.add(Peca('preta', (25,160)))
+black_pieces_group.add(Peca('preta', (160,160)))
+black_pieces_group.add(Peca('preta', (290,160)))
+black_pieces_group.add(Peca('preta', (430,160)))
+white_pieces_group.add(Peca('branca', (87,490)))
+white_pieces_group.add(Peca('branca', (225,490)))
+white_pieces_group.add(Peca('branca', (360,490)))
+white_pieces_group.add(Peca('branca', (490,490)))
+white_pieces_group.add(Peca('branca', (25,435)))
+white_pieces_group.add(Peca('branca', (160,435)))
+white_pieces_group.add(Peca('branca', (290,435)))
+white_pieces_group.add(Peca('branca', (425,435)))
+white_pieces_group.add(Peca('branca', (87,365)))
+white_pieces_group.add(Peca('branca', (225,365)))
+white_pieces_group.add(Peca('branca', (360,365)))
+white_pieces_group.add(Peca('branca', (490,365)))
+
+selected_piece = None
+old_position = None
 
 while running:
     events = pygame.event.get()
@@ -50,27 +54,29 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONUP and not menu.is_enabled():
-            for p in black_pieces_group.sprites():
-                if p.rect.collidepoint(event.pos):
-                    position = p.__getattribute__('pos')
-                    pos = list(position)
-                    pos[0] += 15
-                    pos[1] += 15
-                    position = tuple(pos)
-                    p.__setattr__('pos', position)
+            if selected_piece != None:
+                selected_piece_group.remove(selected_piece)
+                if selected_piece.__getattribute__('cor') == 'branca':
+                    white_pieces_group.add(selected_piece)
+                    selected_piece = None
                 else:
-                    pass
-
+                    black_pieces_group.add(selected_piece)
+                    selected_piece = None
+                
             for p in white_pieces_group.sprites():
-                if p.rect.collidepoint(event.pos):
-                    position = p.__getattribute__('pos')
-                    pos = list(position)
-                    pos[0] += 15
-                    pos[1] += 15
-                    position = tuple(pos)
-                    p.__setattr__('pos', position)
-                else:
-                    pass
+                if p.rect.collidepoint(event.pos) and selected_piece == None:
+                    selected_piece = p
+                    selected_piece_group.add(p)
+                    white_pieces_group.remove(p)
+
+            for p in black_pieces_group.sprites():
+                if p.rect.collidepoint(event.pos) and selected_piece == None:
+                    selected_piece = p
+                    selected_piece_group.add(p)
+                    black_pieces_group.remove(p)
+
+    if selected_piece != None:
+        selected_piece.__setattr__('pos', tuple(pygame.mouse.get_pos()))
 
     if menu.is_enabled():
         try:
@@ -80,6 +86,9 @@ while running:
             pass
     else:
         screen.blit(board, (0,0))
+        if selected_piece != None:
+            selected_piece_group.draw(screen)
+            selected_piece.update
         white_pieces_group.draw(screen)
         black_pieces_group.draw(screen)
         black_pieces_group.update()
