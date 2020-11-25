@@ -73,12 +73,13 @@ while running:
             if selected_piece != None:
                 if (not pygame.sprite.spritecollide(selected_piece, white_pieces_group, False) and 
                     not pygame.sprite.spritecollide(selected_piece, black_pieces_group, False) and
-                    abs(selected_piece.__getattribute__('pos')[0] - old_position[0]) > 40 and 
+                    abs(selected_piece.__getattribute__('pos')[0] - old_position[0]) > 55 and 
                     (selected_piece.__getattribute__('pos')[1] - old_position[1] < 0 or selected_piece.__getattribute__('promoted') or selected_piece.__getattribute__('cor') == 'preta') and 
                     (selected_piece.__getattribute__('pos')[1] - old_position[1] > 0 or selected_piece.__getattribute__('promoted') or selected_piece.__getattribute__('cor') == 'branca') and 
                     (abs(selected_piece.__getattribute__('pos')[0] - old_position[0]) < 80 or piece_to_kill != None or selected_piece.__getattribute__('promoted')) and
                     (abs(selected_piece.__getattribute__('pos')[0] - old_position[0]) < 145 or selected_piece.__getattribute__('promoted')) and
                     (abs(selected_piece.__getattribute__('pos')[1] - old_position[1]) < 145 or selected_piece.__getattribute__('promoted')) and
+                    (abs(selected_piece.__getattribute__('pos')[1] - old_position[1]) > 60 or selected_piece.__getattribute__('promoted')) and
                     (abs(selected_piece.__getattribute__('pos')[1] - old_position[1]) < 80 or piece_to_kill != None or selected_piece.__getattribute__('promoted'))):
                     
                     #Muda o turno.
@@ -140,7 +141,7 @@ while running:
         #Atualiza a posição da peca selecionada a cada frame.
         selected_piece.__setattr__('pos', tuple(pygame.mouse.get_pos()))
         #Escolhe uma peca para destruir
-        # print(selected_piece.__getattribute__('pos'))
+        print(selected_piece.__getattribute__('pos'))
         if (selected_piece.__getattribute__('cor') == 'branca' and pygame.sprite.spritecollide(selected_piece, black_pieces_group, False)):
             for p in black_pieces_group.sprites():
                 piece_to_kill_group.add(p)
@@ -174,10 +175,10 @@ while running:
         black_pieces_group.update()
         white_pieces_group.update()
         if(not menu.is_enabled() and selected_piece == None and (len(black_pieces_group.sprites()) == 0 or len(white_pieces_group.sprites()) == 0)):
-            print("game ended")
             menu.enable()
             black_pieces_group.empty()
             white_pieces_group.empty()
+            turno = True
             black_pieces_group.add(Peca('preta', (25,25)))
             black_pieces_group.add(Peca('preta', (160,25)))
             black_pieces_group.add(Peca('preta', (290,25)))
