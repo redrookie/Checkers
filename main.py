@@ -19,7 +19,7 @@ running = True
 #Criar pecas
 #NECESSARIO PARA DESENHAR A PECA E MOVIMENTALA COM O MOUSE. SEMPRE DEVE CONTER APENAS 1 SPRITE.
 selected_piece_group = pygame.sprite.Group()
-
+piece_to_kill_group = pygame.sprite.Group()
 black_pieces_group = pygame.sprite.Group()
 white_pieces_group = pygame.sprite.Group()
 black_pieces_group.add(Peca('preta', (25,25)))
@@ -47,9 +47,15 @@ white_pieces_group.add(Peca('branca', (225,365)))
 white_pieces_group.add(Peca('branca', (360,365)))
 white_pieces_group.add(Peca('branca', (490,365)))
 
-#peca com que o jogador interage
+#peca com que o jogador interage.
 selected_piece = None
+piece_to_kill = None
+
+#posicao antiga da peca selecionada.
 old_position = None
+
+#True para o turno das pecas brancas, False para o turno das pecas pretas.
+turno = True
 
 while running:
     events = pygame.event.get()
@@ -57,32 +63,80 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONUP and not menu.is_enabled():
-            #Se uma peça estiver selecionada o clique do mouse vai soltar a peça na posição atual.
+            #Se uma peça estiver selecionada, nao estiver na mesma posição de outra peca, e tiver se movido na diagonal, o clique do mouse vai soltar a peça na posição atual.
             if selected_piece != None:
-                selected_piece_group.remove(selected_piece)
-                if selected_piece.__getattribute__('cor') == 'branca':
-                    white_pieces_group.add(selected_piece)
+                if (not pygame.sprite.spritecollide(selected_piece, white_pieces_group, False) and 
+                    not pygame.sprite.spritecollide(selected_piece, black_pieces_group, False) and
+                    abs(selected_piece.__getattribute__('pos')[0] - old_position[0]) > 40):
+                    
+                    #Muda o turno.
+                    turno = not turno
+                    
+                    #solta a peca se for branca
+                    if selected_piece.__getattribute__('cor') == 'branca':
+                        white_pieces_group.add(selected_piece)
+                    #solta a peca se for preta
+                    else:
+                        black_pieces_group.add(selected_piece)
+                        
+
+                    if piece_to_kill != None:
+                        piece_to_kill_group.empty()
+                        piece_to_kill.kill()
+                    
+                    selected_piece_group.remove(selected_piece)
                     selected_piece = None
-                else:
-                    black_pieces_group.add(selected_piece)
-                    selected_piece = None
+
+                else:#Movimento invalido, solta a peca na posicao original
+                    selected_piece.__setattr__('pos', old_position)
+                    piece_to_kill_group.empty()
+                    piece_to_kill = None
+
+                    #solta a peca se for branca
+                    if selected_piece.__getattribute__('cor') == 'branca':
+                        white_pieces_group.add(selected_piece)
+                        selected_piece = None
+                    
+                    #solta a peca se for preta
+                    else:
+                        black_pieces_group.add(selected_piece)
+                        selected_piece = None
             #Se não há uma peca selecionada procurar por uma peca que esteja em baixo do ponteiro do mouse.
             else:    
-                for p in white_pieces_group.sprites():
-                    if p.rect.collidepoint(event.pos) and selected_piece == None:
-                        selected_piece = p
-                        selected_piece_group.add(p)
-                        white_pieces_group.remove(p)
-
-                for p in black_pieces_group.sprites():
-                    if p.rect.collidepoint(event.pos) and selected_piece == None:
-                        selected_piece = p
-                        selected_piece_group.add(p)
-                        black_pieces_group.remove(p)
+                #turno das pecas pretas
+                if not turno:
+                    for p in black_pieces_group.sprites():
+                        if p.rect.collidepoint(event.pos) and selected_piece == None:
+                            selected_piece = p
+                            old_position = p.__getattribute__('pos')
+                            selected_piece_group.add(p)
+                            black_pieces_group.remove(p)
+                #turno das pecas brancas
+                else:
+                    for p in white_pieces_group.sprites():
+                        if p.rect.collidepoint(event.pos) and selected_piece == None:
+                            selected_piece = p
+                            old_position = p.__getattribute__('pos')
+                            selected_piece_group.add(p)
+                            white_pieces_group.remove(p)
 
     if selected_piece != None:
+        #Atualiza a posição da peca selecionada a cada frame.
         selected_piece.__setattr__('pos', tuple(pygame.mouse.get_pos()))
-
+        #Escolhe uma peca para destruir
+        if (selected_piece.__getattribute__('cor') == 'branca' and pygame.sprite.spritecollide(selected_piece, black_pieces_group, False)):
+            for p in black_pieces_group.sprites():
+                piece_to_kill_group.add(p)
+                if pygame.sprite.spritecollide(selected_piece, piece_to_kill_group, False):
+                    piece_to_kill = p
+        if (selected_piece.__getattribute__('cor') == 'preta' and pygame.sprite.spritecollide(selected_piece, white_pieces_group, False)):
+            for p in white_pieces_group.sprites():
+                piece_to_kill_group.add(p)
+                if pygame.sprite.spritecollide(selected_piece, piece_to_kill_group, False):
+                    piece_to_kill = p
+        
+    #print(old_position)
+    #Metodos para desenhar os objetos na janela
     if menu.is_enabled():
         try:
             menu.update(events)
@@ -90,6 +144,7 @@ while running:
         except:
             pass
     else:
+        #A ordem de draw e importante
         screen.blit(board, (0,0))
         if selected_piece != None:
             selected_piece.update()
