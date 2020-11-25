@@ -17,7 +17,9 @@ menu.add_button('Quit', pygame_menu.events.EXIT)
 running = True
 
 #Criar pecas
+#NECESSARIO PARA DESENHAR A PECA E MOVIMENTALA COM O MOUSE. SEMPRE DEVE CONTER APENAS 1 SPRITE.
 selected_piece_group = pygame.sprite.Group()
+
 black_pieces_group = pygame.sprite.Group()
 white_pieces_group = pygame.sprite.Group()
 black_pieces_group.add(Peca('preta', (25,25)))
@@ -45,6 +47,7 @@ white_pieces_group.add(Peca('branca', (225,365)))
 white_pieces_group.add(Peca('branca', (360,365)))
 white_pieces_group.add(Peca('branca', (490,365)))
 
+#peca com que o jogador interage
 selected_piece = None
 old_position = None
 
@@ -54,6 +57,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONUP and not menu.is_enabled():
+            #Se uma peça estiver selecionada o clique do mouse vai soltar a peça na posição atual.
             if selected_piece != None:
                 selected_piece_group.remove(selected_piece)
                 if selected_piece.__getattribute__('cor') == 'branca':
@@ -62,18 +66,19 @@ while running:
                 else:
                     black_pieces_group.add(selected_piece)
                     selected_piece = None
-                
-            for p in white_pieces_group.sprites():
-                if p.rect.collidepoint(event.pos) and selected_piece == None:
-                    selected_piece = p
-                    selected_piece_group.add(p)
-                    white_pieces_group.remove(p)
+            #Se não há uma peca selecionada procurar por uma peca que esteja em baixo do ponteiro do mouse.
+            else:    
+                for p in white_pieces_group.sprites():
+                    if p.rect.collidepoint(event.pos) and selected_piece == None:
+                        selected_piece = p
+                        selected_piece_group.add(p)
+                        white_pieces_group.remove(p)
 
-            for p in black_pieces_group.sprites():
-                if p.rect.collidepoint(event.pos) and selected_piece == None:
-                    selected_piece = p
-                    selected_piece_group.add(p)
-                    black_pieces_group.remove(p)
+                for p in black_pieces_group.sprites():
+                    if p.rect.collidepoint(event.pos) and selected_piece == None:
+                        selected_piece = p
+                        selected_piece_group.add(p)
+                        black_pieces_group.remove(p)
 
     if selected_piece != None:
         selected_piece.__setattr__('pos', tuple(pygame.mouse.get_pos()))
@@ -87,8 +92,9 @@ while running:
     else:
         screen.blit(board, (0,0))
         if selected_piece != None:
+            selected_piece.update()
             selected_piece_group.draw(screen)
-            selected_piece.update
+            
         white_pieces_group.draw(screen)
         black_pieces_group.draw(screen)
         black_pieces_group.update()
