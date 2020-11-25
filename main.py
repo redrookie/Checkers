@@ -60,6 +60,12 @@ turno = True
 while running:
     events = pygame.event.get()
     for event in events:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DELETE:
+                menu.enable()
+                black_pieces_group.empty()
+                white_pieces_group.empty()
+                selected_piece = None
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONUP and not menu.is_enabled():
@@ -134,7 +140,7 @@ while running:
         #Atualiza a posição da peca selecionada a cada frame.
         selected_piece.__setattr__('pos', tuple(pygame.mouse.get_pos()))
         #Escolhe uma peca para destruir
-        print(selected_piece.__getattribute__('pos'))
+        # print(selected_piece.__getattribute__('pos'))
         if (selected_piece.__getattribute__('cor') == 'branca' and pygame.sprite.spritecollide(selected_piece, black_pieces_group, False)):
             for p in black_pieces_group.sprites():
                 piece_to_kill_group.add(p)
@@ -167,5 +173,34 @@ while running:
         black_pieces_group.draw(screen)
         black_pieces_group.update()
         white_pieces_group.update()
+        if(not menu.is_enabled() and selected_piece == None and (len(black_pieces_group.sprites()) == 0 or len(white_pieces_group.sprites()) == 0)):
+            print("game ended")
+            menu.enable()
+            black_pieces_group.empty()
+            white_pieces_group.empty()
+            black_pieces_group.add(Peca('preta', (25,25)))
+            black_pieces_group.add(Peca('preta', (160,25)))
+            black_pieces_group.add(Peca('preta', (290,25)))
+            black_pieces_group.add(Peca('preta', (430,25)))
+            black_pieces_group.add(Peca('preta', (90,92)))
+            black_pieces_group.add(Peca('preta', (225,92)))
+            black_pieces_group.add(Peca('preta', (365,92)))
+            black_pieces_group.add(Peca('preta', (495,92)))
+            black_pieces_group.add(Peca('preta', (25,160)))
+            black_pieces_group.add(Peca('preta', (160,160)))
+            black_pieces_group.add(Peca('preta', (290,160)))
+            black_pieces_group.add(Peca('preta', (430,160)))
+            white_pieces_group.add(Peca('branca', (87,490)))
+            white_pieces_group.add(Peca('branca', (225,490)))
+            white_pieces_group.add(Peca('branca', (360,490)))
+            white_pieces_group.add(Peca('branca', (490,490)))
+            white_pieces_group.add(Peca('branca', (25,435)))
+            white_pieces_group.add(Peca('branca', (160,435)))
+            white_pieces_group.add(Peca('branca', (290,435)))
+            white_pieces_group.add(Peca('branca', (425,435)))
+            white_pieces_group.add(Peca('branca', (87,365)))
+            white_pieces_group.add(Peca('branca', (225,365)))
+            white_pieces_group.add(Peca('branca', (360,365)))
+            white_pieces_group.add(Peca('branca', (490,365)))
 
     pygame.display.update()
